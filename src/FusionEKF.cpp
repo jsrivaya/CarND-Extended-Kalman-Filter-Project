@@ -70,7 +70,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  Initialization
    ****************************************************************************/
   if (!is_initialized_) {
-    cout << "Initializing ..." << endl;
     /**
     TODO:
       * Initialize the state ekf_.x_ with the first measurement. x, F, H_laser, H_jacobian, P, etc.
@@ -89,9 +88,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
         * use Fj instead of F
         * use the Hj instead of H
         */
-        double rho = measurement_pack.raw_measurements_[0];
-        double phi = measurement_pack.raw_measurements_[1];
-        double rho_dot = measurement_pack.raw_measurements_[2];
+        float rho = measurement_pack.raw_measurements_[0];
+        float phi = measurement_pack.raw_measurements_[1];
+        float rho_dot = measurement_pack.raw_measurements_[2];
         // x = [px, py, vx, vy]
         ekf_.x_ << rho*cos(phi), rho*sin(phi), rho_dot * cos(phi), rho_dot * sin(phi);
     }
@@ -111,7 +110,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   /*****************************************************************************
    *  Prediction
    ****************************************************************************/
-    cout << "Predict ..." << endl;
 
   /**
    DONE:
@@ -122,7 +120,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    */
 
     //compute the time elapsed between the current and previous measurements
-    double dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0; //dt - expressed in seconds
+    float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0; //dt - expressed in seconds
     previous_timestamp_ = measurement_pack.timestamp_;
 
     //Modify the F matrix so that the time is integrated
@@ -131,9 +129,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     // be sure that we avoid division by zero
     //if (dt > 0) {
-        double dt_2 = dt * dt;
-        double dt_3 = dt_2 * dt;
-        double dt_4 = dt_3 * dt;
+        float dt_2 = dt * dt;
+        float dt_3 = dt_2 * dt;
+        float dt_4 = dt_3 * dt;
 
         //set the process covariance matrix Q
         ekf_.Q_ = MatrixXd(4, 4);
@@ -157,7 +155,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
-    cout << "UpdateEKF ..." << endl;
     // Calculating Jacobian Matrix
     Hj_ = tools.CalculateJacobian(ekf_.x_);
     ekf_.H_ = Hj_;
@@ -165,7 +162,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {
     // Laser updates
-    cout << "Update ..." << endl;
     ekf_.H_ = H_laser_;
     ekf_.R_ = R_laser_;
     ekf_.Update(measurement_pack.raw_measurements_);

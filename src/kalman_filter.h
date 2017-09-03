@@ -2,6 +2,8 @@
 #define KALMAN_FILTER_H_
 #include "Eigen/Dense"
 
+#define DEBUG 0
+
 class KalmanFilter {
 public:
 
